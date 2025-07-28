@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Heroku Flask Wrapper for Telegram Bot
-Provides web interface and keeps the bot alive
+Clean Flask Wrapper for Telegram Bot
+Single instance, no conflicts
 """
 
 import os
@@ -13,7 +13,7 @@ import sys
 from flask import Flask, jsonify, render_template_string
 
 # 配置日誌
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
@@ -27,22 +27,22 @@ def run_bot_async():
     """在新的事件循環中運行Bot"""
     global bot_running, bot_task
     try:
-        # 動態導入heroku_bot模組
-        import heroku_bot
+        # 動態導入clean_bot模組
+        import clean_bot
         
         # 創建新的事件循環
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         
         bot_running = True
-        logger.info("Starting bot in async thread...")
+        logger.warning("Starting clean bot in async thread...")
         
         # 運行Bot
-        bot_task = loop.create_task(heroku_bot.main())
+        bot_task = loop.create_task(clean_bot.main())
         loop.run_until_complete(bot_task)
         
     except ImportError as e:
-        logger.error(f"Failed to import heroku_bot: {e}")
+        logger.error(f"Failed to import clean_bot: {e}")
         bot_running = False
     except Exception as e:
         logger.error(f"Bot error: {e}")
@@ -152,7 +152,7 @@ def index():
             <div class="info">
                 <h3>🔗 相關連結</h3>
                 <a href="/health" class="btn">健康檢查 API</a>
-                <a href="/start" class="btn">重啟 Bot</a>
+                <a href="/restart" class="btn">重啟 Bot</a>
                 <a href="https://t.me/{{ bot_username }}" class="btn" target="_blank">開啟 Bot</a>
             </div>
             
@@ -195,9 +195,9 @@ def health():
         'platform': 'heroku'
     })
 
-@app.route('/start')
-def start_bot():
-    """啟動或重啟Bot"""
+@app.route('/restart')
+def restart_bot():
+    """重啟Bot"""
     global bot_thread, bot_running, bot_task
     
     try:
@@ -219,36 +219,14 @@ def start_bot():
         
         return jsonify({
             'status': 'success',
-            'message': 'Bot started successfully'
+            'message': 'Bot restarted successfully'
         })
         
     except Exception as e:
-        logger.error(f"Error starting bot: {e}")
+        logger.error(f"Error restarting bot: {e}")
         return jsonify({
             'status': 'error',
-            'message': f'Failed to start bot: {str(e)}'
-        }), 500
-
-@app.route('/stop')
-def stop_bot():
-    """停止Bot"""
-    global bot_running, bot_task
-    
-    try:
-        if bot_task:
-            bot_task.cancel()
-        bot_running = False
-        
-        return jsonify({
-            'status': 'success',
-            'message': 'Bot stopped successfully'
-        })
-        
-    except Exception as e:
-        logger.error(f"Error stopping bot: {e}")
-        return jsonify({
-            'status': 'error',
-            'message': f'Failed to stop bot: {str(e)}'
+            'message': f'Failed to restart bot: {str(e)}'
         }), 500
 
 @app.errorhandler(404)
@@ -269,7 +247,7 @@ def internal_error(error):
 
 if __name__ == '__main__':
     # 自動啟動Bot
-    logger.info("Starting Heroku Flask app...")
+    logger.warning("Starting Clean Flask app...")
     
     if not bot_running:
         bot_thread = threading.Thread(target=run_bot_async, daemon=True)
@@ -277,7 +255,7 @@ if __name__ == '__main__':
     
     # 啟動Flask應用
     port = int(os.environ.get('PORT', 5000))
-    logger.info(f"Starting Flask app on port {port}")
+    logger.warning(f"Starting Flask app on port {port}")
     
     app.run(
         host='0.0.0.0', 
@@ -285,4 +263,3 @@ if __name__ == '__main__':
         debug=False,
         threaded=True
     )
-
