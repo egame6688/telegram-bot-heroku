@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Clean Flask Wrapper for Telegram Bot
-Single instance, no conflicts
+Flask Wrapper for Telegram Bot
+Fixed import issue
 """
 
 import os
@@ -27,22 +27,22 @@ def run_bot_async():
     """在新的事件循環中運行Bot"""
     global bot_running, bot_task
     try:
-        # 動態導入clean_bot模組
-        import clean_bot
+        # 動態導入heroku_bot模組 (修復：從clean_bot改為heroku_bot)
+        import heroku_bot
         
         # 創建新的事件循環
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         
         bot_running = True
-        logger.warning("Starting clean bot in async thread...")
+        logger.warning("Starting heroku bot in async thread...")
         
         # 運行Bot
-        bot_task = loop.create_task(clean_bot.main())
+        bot_task = loop.create_task(heroku_bot.main())
         loop.run_until_complete(bot_task)
         
     except ImportError as e:
-        logger.error(f"Failed to import clean_bot: {e}")
+        logger.error(f"Failed to import heroku_bot: {e}")
         bot_running = False
     except Exception as e:
         logger.error(f"Bot error: {e}")
@@ -247,7 +247,7 @@ def internal_error(error):
 
 if __name__ == '__main__':
     # 自動啟動Bot
-    logger.warning("Starting Clean Flask app...")
+    logger.warning("Starting Flask app...")
     
     if not bot_running:
         bot_thread = threading.Thread(target=run_bot_async, daemon=True)
