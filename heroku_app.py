@@ -281,8 +281,8 @@ def run_bot():
         bot_status['error'] = None
         
         # 動態導入Bot模組
-        import working_heroku_bot
-        working_heroku_bot.main()
+        import heroku_bot
+        heroku_bot.main()
         
     except Exception as e:
         logger.error(f"Bot error: {e}")
@@ -328,4 +328,3 @@ if __name__ == '__main__':
     # 啟動Flask應用
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
-
