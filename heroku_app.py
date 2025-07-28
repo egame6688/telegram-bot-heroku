@@ -147,7 +147,7 @@ def index():
                 <h3>🔗 相關連結</h3>
                 <a href="/health" class="btn">健康檢查 API</a>
                 <a href="/start" class="btn">重啟 Bot</a>
-                <a href="https://t.me/{{ bot_username }}" class="btn" target="_blank">開啟 Bot</a>
+                <a href="https://t.me/{{ wink666_bot }}" class="btn" target="_blank">開啟 Bot</a>
             </div>
             
             <div class="info">
